@@ -1,5 +1,12 @@
 function [U0, S, V, output ] = AccSoftImpute( D, lambda, para )
-% D: sparse observed matrix
+% D: [m x n] sparse observed matrix
+% lambda: nuclear norm penalty
+% para:
+%    tol:     convergence tolerance
+%    maxIter: maximum number of iterations
+%    decay:   contral decay of lambda in each iteration.
+%    maxR:    maximum rank allowed during iteration
+%    test:    run test RMSE, see usage in TestRecsys.m
 
 if(isfield(para, 'decay'))
     decay = para.decay;
@@ -13,10 +20,9 @@ else
     maxR = min(size(D));
 end
 
-objstep = 1;
 
 maxIter = para.maxIter;
-tol = para.tol*objstep;
+tol = para.tol;
 
 lambdaMax = topksvd(D, 1, 5);
 
@@ -35,7 +41,7 @@ a1 = 1;
 
 spa = sparse(row, col, data, m, n);
 
-clear D;
+clear D m n;
 
 obj = zeros(maxIter, 1);
 RMSE = zeros(maxIter, 1);
@@ -45,7 +51,6 @@ RankOut = zeros(maxIter, 1);
 t = tic;
 for i = 1:maxIter
     lambdai = abs(lambdaMax - lambda)*(decay^i) + lambda;
-    
     bi = (a0 - 1)/a1;
     
     % make up sparse term Z = U*V' +spa
@@ -100,12 +105,14 @@ for i = 1:maxIter
     objVal = partXY(Ui', Vi', row, col, length(data));
     objVal = (1/2)*sumsqr(data - objVal');
     objVal = objVal + lambda*sum(S(:));
+    obj(i) = objVal;
 
     if(i > 1)
         delta = obj(i - 1)- objVal;
         fprintf('iter: %d; obj: %.3d (dif: %.3d); rank %d; lambda: %.1f; power(iter %d, rank %d, tol %.2d) \n', ...
         i, objVal, delta, nnz(S), lambdai, pwIter, size(R, 2), pwTol)
 
+        % adaptive restart
         if(delta < 0)
             a0 = 1;
             a1 = 1;
@@ -115,8 +122,8 @@ for i = 1:maxIter
         i, objVal, nnz(S), lambdai, pwIter, size(R, 2), pwTol)
     end
 
-    obj(i) = objVal;
-
+    
+    % testing performance
     if(isfield(para, 'test'))
         tempS = eye(size(U1, 2), size(V1, 2));
         RMSE(i) = MatCompRMSE(V1, U1, tempS, ...
@@ -124,11 +131,12 @@ for i = 1:maxIter
         fprintf('RMSE %.2d \n', RMSE(i));
     end
     
-    % testing performance
-    Time(i) = toc(t);
+    % checking covergence
     if(i > 1 && abs(delta) < tol)
         break;
     end
+    
+    Time(i) = toc(t);
 end
 
 output.obj = obj(1:i);
