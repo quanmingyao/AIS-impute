@@ -1,6 +1,6 @@
 clear; clc;
 
-M = 2000;
+M = 500;
 N = M;
 K = 5;
 
@@ -36,11 +36,10 @@ for g = 1:length(gridLambda)
     X = U*S*V';
     gridNMSE(1, g) = norm((X - O).*valD, 'fro')/norm(O.*valD, 'fro');
     
-    [ U, S, V ] = PostProcess( U, V, traD, 1 );
+    [ U, S, V ] = PostProcess(traD, U, V, 1 );
     X = U*S*V';
     
     gridNMSE(2, g) = norm((X - O).*valD, 'fro')/norm(O.*valD, 'fro');
-    
     
     if(g > 1 && gridNMSE(2, g) > gridNMSE(2, g - 1))
         break;
@@ -58,30 +57,21 @@ para.tol = 1e-6;
 para.speedup = 1;
 
 %% ---------------------------------------------------------------
-% t = tic;
-% para.decay = 0.85;
-% [U, ~, V, out{1}] = APGMatComp(full(traD), lambda, para );
-% [ U, S, V ] = PostProcess( U, V, traD, 1 );
-% Time(1) = toc(t);
-% X = U*S*V';
-% NMSE(1) = norm((X - O).*tstD, 'fro')/norm(O.*tstD, 'fro');
-% clear X;
-
-% t = tic;
-% para.decay = 0.9;
-% para.exact = 1;
-% [U, ~, V, out{2}] = SoftImpute(traD, lambda, para );
-% [ U, S, V ] = PostProcess( U, V, traD, 1 );
-% Time(2) = toc(t);
-% X = U*S*V';
-% NMSE(2) = norm((X - O).*tstD, 'fro')/norm(O.*tstD, 'fro');
-% clear X;
+t = tic;
+para.decay = 0.9;
+para.exact = 1;
+[U, ~, V, out{2}] = SoftImpute(traD, lambda, para );
+[ U, S, V ] = PostProcess(traD, U, V);
+Time(2) = toc(t);
+X = U*S*V';
+NMSE(2) = norm((X - O).*tstD, 'fro')/norm(O.*tstD, 'fro');
+clear X;
 
 t = tic;
 para.decay = 0.85;
 para.exact = 1;
 [U, ~, V, out{3}] = AccSoftImpute(traD, lambda, para );
-[ U, S, V ] = PostProcess( U, V, traD, 1 );
+[ U, S, V ] = PostProcess( traD, U, V);
 Time(3) = toc(t);
 X = U*S*V';
 NMSE(3) = norm((X - O).*tstD, 'fro')/norm(O.*tstD, 'fro');
@@ -91,7 +81,7 @@ t = tic;
 para.decay = 0.85;
 para.exact = 0;
 [U, ~, V, out{4}] = AccSoftImpute(traD, lambda, para );
-[ U, S, V ] = PostProcess( U, V, traD, 1 );
+[ U, S, V ] = PostProcess( traD, U, V);
 Time(4) = toc(t);
 X = U*S*V';
 NMSE(4) = norm((X - O).*tstD, 'fro')/norm(O.*tstD, 'fro');
