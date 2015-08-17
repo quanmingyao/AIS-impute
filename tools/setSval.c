@@ -9,21 +9,27 @@
 /* set values to sparse matrix S */
 void mexFunction(int nargout, mxArray *pargout [], int nargin, const mxArray *pargin [])
 {
+    double *v;
+    double  LL;
+    double *Sval;
+    unsigned long L;
+    unsigned long k;
+            
     if (nargin != 3 || nargout != 1)
         mexErrMsgTxt ("Usage:  S = SetSpv ( S, v, L )") ;
 
     /* ---------------------------------------------------------------- */
     /* inputs */
     /* ---------------------------------------------------------------- */
-    double *Sval = mxGetPr( pargin [0] );
-    double *v    = mxGetPr( pargin [1] );
-    double  LL   = mxGetScalar( pargin [2] );  
-    unsigned long L = (unsigned long) LL;
+    Sval = mxGetPr( pargin [0] );
+    v    = mxGetPr( pargin [1] );
+    LL   = mxGetScalar( pargin [2] );  
+    L    = (unsigned long) LL;
     
     /* ---------------------------------------------------------------- */
     /* output */
     /* ---------------------------------------------------------------- */
-    for (unsigned long k = 0; k < L; k++)
+    for (k = 0; k < L; k++)
     {
         Sval[k] = v[k]; 
     }

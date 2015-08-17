@@ -1,4 +1,4 @@
-clear; clc; close all;
+clear; clc; 
 dataset = 'data/movielen100k';
 load(strcat('', dataset, '.mat'));
 
@@ -35,7 +35,8 @@ Time = toc(t);
 RMSE = MatCompRMSE(V, U, S, row(tstIdx), col(tstIdx), val(tstIdx));
 clear U S V t;
 
-figure(1);
+close all;
+figure;
 plot(out.Time, out.RMSE);
-figure(2);
+figure;
 semilogy(out.Time, out.obj - min(out.obj));
