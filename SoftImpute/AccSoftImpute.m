@@ -98,10 +98,6 @@ for i = 1:maxIter
     a0 = a1;
     a1 = ai;
     
-    if(maxR <= nnz(S))
-        maxR = maxR + 1;
-    end
-    
     objVal = partXY(Ui', Vi', row, col, length(data));
     objVal = (1/2)*sumsqr(data - objVal');
     objVal = objVal + lambda*sum(S(:));
@@ -122,11 +118,10 @@ for i = 1:maxIter
         i, objVal, nnz(S), lambdai, pwIter, size(R, 2), pwTol)
     end
 
-    
     % testing performance
     if(isfield(para, 'test'))
         tempS = eye(size(U1, 2), size(V1, 2));
-        RMSE(i) = MatCompRMSE(V1, U1, tempS, ...
+        RMSE(i) = MatCompRMSE(U1, V1, tempS, ...
             para.test.row, para.test.col, para.test.data);
         fprintf('RMSE %.2d \n', RMSE(i));
     end

@@ -30,9 +30,9 @@ para.maxIter = 5000;
 t = tic;
 para.exact = 0;
 para.decay = 0.85;
-[U, S, V, out] = AccSoftImpute(traData', lambda, para );
+[U, S, V, out] = AccSoftImpute(traData, lambda, para );
 Time = toc(t);
-RMSE = MatCompRMSE(V, U, S, row(tstIdx), col(tstIdx), val(tstIdx));
+RMSE = MatCompRMSE(U, V, S, row(tstIdx), col(tstIdx), val(tstIdx));
 clear U S V t;
 
 close all;
