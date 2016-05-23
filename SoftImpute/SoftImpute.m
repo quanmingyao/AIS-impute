@@ -48,7 +48,7 @@ for i = 1:maxIter
     % make up sparse term Z = U*V' +spa
     spa = partXY(U', V1', row, col, length(data));
     spa = data - spa';
-    Z = setSval(Z, spa, length(spa));
+    setSval(Z, spa, length(spa));
     
     [ R ] = filterBase( V1, V0, 1e-5);
     R = R(:, 1:min(size(R,2), maxR));

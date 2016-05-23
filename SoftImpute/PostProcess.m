@@ -49,7 +49,7 @@ f = (1/2)*sum(res.^2);
 
 % gradient
 if nargout > 1
-    grad = setSval(grad, res, length(res));
+    setSval(grad, res, length(res));
     
     g = zeros(size(s));
     for i = 1:length(g)

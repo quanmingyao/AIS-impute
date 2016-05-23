@@ -58,7 +58,7 @@ for i = 1:maxIter
     part1 = partXY(U1', V1', row, col, length(data));
     
     part0 = data - (1 + bi)*part1' + bi*part0';
-    spa = setSval(spa, part0, length(part0));
+    setSval(spa, part0, length(part0));
     
     R = filterBase( V1, V0, 1e-6);
     R = R(:, 1:min([size(R,2), maxR]));

@@ -2,5 +2,5 @@
 
 clear; clc;
 mex partXY.c;
-mex setSval.c;
+mex setSval.cpp;
 mex updateSparse.c;
